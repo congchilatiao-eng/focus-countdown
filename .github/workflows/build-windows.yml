@@ -1,0 +1,38 @@
+name: Build Windows Countdown
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "outputs/countdown.py"
+      - ".github/workflows/build-windows.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install packager
+        run: python -m pip install --upgrade pip pyinstaller
+
+      - name: Build executable
+        run: >
+          pyinstaller --onefile --windowed --name LeftTopCountdown
+          --distpath build-output outputs/countdown.py
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: LeftTopCountdown-Windows
+          path: build-output/LeftTopCountdown.exe
+          if-no-files-found: error
