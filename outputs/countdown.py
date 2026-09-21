@@ -20,7 +20,8 @@ class CountdownApp:
         root.minsize(330, 255)
         root.configure(bg=self.BG)
         root.attributes("-topmost", True)
-        root.overrideredirect(True)
+        # Keep native window management so minimize/restore works from the taskbar.
+        root.resizable(False, False)
         root.protocol("WM_DELETE_WINDOW", root.destroy)
 
         self.running = False
@@ -41,7 +42,7 @@ class CountdownApp:
         self._tick()
 
     def _build(self):
-        # Moveable header keeps the timer unobtrusive without a normal title bar.
+        # The custom header also provides an easily accessible minimize button.
         header = tk.Frame(self.root, bg=self.BG, height=34)
         header.pack(fill="x", padx=14, pady=(10, 0))
         header.pack_propagate(False)
@@ -55,6 +56,9 @@ class CountdownApp:
         tk.Button(header, text="×", command=self.root.destroy, bg=self.BG, fg=self.MUTED,
                   activebackground=self.BG, activeforeground=self.TEXT, relief="flat", bd=0,
                   font=("Segoe UI", 16), cursor="hand2").pack(side="right")
+        tk.Button(header, text="−", command=self.root.iconify, bg=self.BG, fg=self.MUTED,
+                  activebackground=self.BG, activeforeground=self.TEXT, relief="flat", bd=0,
+                  font=("Segoe UI", 16), cursor="hand2").pack(side="right", padx=(0, 8))
 
         self.time_label = tk.Label(self.root, bg=self.BG, fg=self.TEXT, font=("Segoe UI", 40, "bold"))
         self.time_label.pack(pady=(0, 5))
